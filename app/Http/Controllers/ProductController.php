@@ -34,24 +34,27 @@ class ProductController extends Controller
     }
 
 
+    use Illuminate\Support\Facades\Storage;
+
     public function store(Request $request)
     {
-
-
         $data = $request->validate([
             'category_id' => 'required|exists:categories,id',
             'name' => 'required',
             'description' => 'nullable',
-            'image' => 'nullable|image|max:2048', // rasmni qabul qilamiz
+            'image' => 'nullable|image|max:2048',
         ]);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('products', 'public');
-            $data['image'] = config('app.url') . '/storage/' . $path;
+            $path = $request->file('image')->store('products', 's3');
+            $data['image'] = $path; // faqat path saqlaymiz
         }
 
-        return Product::create($data);
+        $product = Product::create($data);
+
+        return $product->load('category', 'variants');
     }
+
 
     public function show(Product $product)
     {
@@ -68,14 +71,14 @@ class ProductController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // eski rasmni o'chirish
-            if ($product->image) {
-                $oldPath = str_replace(config('app.url') . '/storage/', '', $product->image);
-                Storage::disk('public')->delete($oldPath);
+
+            // eski rasmni o‘chirish (agar mavjud bo‘lsa)
+            if ($product->image && Storage::disk('s3')->exists($product->image)) {
+                Storage::disk('s3')->delete($product->image);
             }
 
-            $path = $request->file('image')->store('products', 'public');
-            $data['image'] = config('app.url') . '/storage/' . $path;
+            $path = $request->file('image')->store('products', 's3');
+            $data['image'] = $path;
         }
 
         $product->update($data);
@@ -84,12 +87,12 @@ class ProductController extends Controller
     }
 
 
+
     public function destroy(Product $product)
     {
-        // agar image bo'lsa, diskdan o'chirish
-        if ($product->image) {
-            $oldPath = str_replace(config('app.url') . '/storage/', '', $product->image);
-            Storage::disk('public')->delete($oldPath);
+        // rasmni o‘chiramiz
+        if ($product->image && Storage::disk('s3')->exists($product->image)) {
+            Storage::disk('s3')->delete($product->image);
         }
 
         $product->delete();

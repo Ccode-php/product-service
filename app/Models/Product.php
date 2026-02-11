@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
@@ -20,4 +21,10 @@ class Product extends Model
         return $this->hasMany(ProductVariant::class);
     }
 
+    public function getImageUrlAttribute()
+    {
+        return $this->image
+            ? Storage::disk('s3')->url($this->image)
+            : null;
+    }
 }
