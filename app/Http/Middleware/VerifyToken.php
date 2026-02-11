@@ -20,7 +20,8 @@ class VerifyToken
         $token = str_replace('Bearer ', '', $header);
 
         try {
-            $publicKey = file_get_contents(env('PUBLIC_KEY'));
+            //$publicKey = file_get_contents(env('PUBLIC_KEY'));
+            $publicKey = file_get_contents(storage_path('oauth-public.key'));
             $decoded = JWT::decode($token, new Key($publicKey, 'RS256'));
         } catch (\Exception $e) {
             return response()->json(['error' => 'Invalid token'], 401);
