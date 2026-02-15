@@ -44,8 +44,9 @@ class ProductController extends Controller
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('products', 's3');
-            $data['image'] = $path; // faqat path saqlaymiz
+            $data['image'] = Storage::disk('s3')->url($path); // ✅ URL saqlaymiz
         }
+        
 
         $product = Product::create($data);
 
@@ -69,14 +70,18 @@ class ProductController extends Controller
 
         if ($request->hasFile('image')) {
 
-            // eski rasmni o‘chirish (agar mavjud bo‘lsa)
-            if ($product->image && Storage::disk('s3')->exists($product->image)) {
-                Storage::disk('s3')->delete($product->image);
+            // eski rasmni o‘chirish (agar URL bo‘lsa, S3 path bo‘lishi kerak)
+            if ($product->image) {
+                $oldPath = str_replace(Storage::disk('s3')->url('/'), '', $product->image);
+                if (Storage::disk('s3')->exists($oldPath)) {
+                    Storage::disk('s3')->delete($oldPath);
+                }
             }
-
+        
             $path = $request->file('image')->store('products', 's3');
-            $data['image'] = $path;
+            $data['image'] = Storage::disk('s3')->url($path);
         }
+        
 
         $product->update($data);
 
@@ -88,8 +93,11 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         // rasmni o‘chiramiz
-        if ($product->image && Storage::disk('s3')->exists($product->image)) {
-            Storage::disk('s3')->delete($product->image);
+        if ($product->image) {
+            $oldPath = str_replace(Storage::disk('s3')->url('/'), '', $product->image);
+            if (Storage::disk('s3')->exists($oldPath)) {
+                Storage::disk('s3')->delete($oldPath);
+            }
         }
 
         $product->delete();
