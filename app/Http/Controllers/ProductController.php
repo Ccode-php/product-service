@@ -33,9 +33,6 @@ class ProductController extends Controller
         return $query->get();
     }
 
-
-    use Illuminate\Support\Facades\Storage;
-
     public function store(Request $request)
     {
         $data = $request->validate([
