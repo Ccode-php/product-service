@@ -15,6 +15,12 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        dd(
+            $request->all(),
+            $request->hasFile('image'),
+            $request->file('image')
+        );
+        
         $data = $request->validate([
             'category_id' => 'required|exists:categories,id',
             'name' => 'required',
