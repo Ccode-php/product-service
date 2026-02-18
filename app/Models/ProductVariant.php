@@ -15,6 +15,9 @@ class ProductVariant extends Model
         'stock',
     ];
 
+    protected $appends = ['image_url'];
+
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);

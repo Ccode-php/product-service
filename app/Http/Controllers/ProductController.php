@@ -24,17 +24,21 @@ class ProductController extends Controller
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('', 's3');
-            $data['image'] = Storage::disk('s3')->url($path);
+            $data['image'] = $path; // faqat filename
         }
 
         $product = Product::create($data);
 
-        return $product->load('category', 'variants');
+        return $product->load('category', 'variants')
+               ->append('image_url');
+
     }
 
     public function show(Product $product)
     {
-        return $product->load('category', 'variants');
+        return $product->load('category', 'variants')
+               ->append('image_url');
+
     }
 
     public function update(Request $request, Product $product)
@@ -50,25 +54,26 @@ class ProductController extends Controller
 
             // eski rasmni o‘chiramiz
             if ($product->image) {
-                $oldPath = str_replace(env('AWS_URL') . '/', '', $product->image);
-                Storage::disk('s3')->delete($oldPath);
+                Storage::disk('s3')->delete($product->image);
             }
-
+            
             $path = $request->file('image')->store('', 's3');
-            $data['image'] = Storage::disk('s3')->url($path);
+            $data['image'] = $path;
         }
 
         $product->update($data);
 
-        return $product->load('category', 'variants');
+        return $product->load('category', 'variants')
+               ->append('image_url');
+
     }
 
     public function destroy(Product $product)
     {
         if ($product->image) {
-            $oldPath = str_replace(env('AWS_URL') . '/', '', $product->image);
-            Storage::disk('s3')->delete($oldPath);
+            Storage::disk('s3')->delete($product->image);
         }
+        
 
         $product->delete();
 

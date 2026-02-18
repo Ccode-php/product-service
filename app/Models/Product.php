@@ -23,8 +23,10 @@ class Product extends Model
 
     public function getImageUrlAttribute()
     {
-        return $this->image
-            ? Storage::disk('s3')->url($this->image)
-            : null;
+        if (!$this->image) {
+            return null;
+        }
+    
+        return Storage::disk('s3')->url($this->image);
     }
 }
