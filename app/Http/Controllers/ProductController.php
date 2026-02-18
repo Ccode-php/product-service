@@ -23,7 +23,7 @@ class ProductController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('products', 's3');
+            $path = $request->file('image')->store('', 's3');
             $data['image'] = Storage::disk('s3')->url($path);
         }
 
@@ -54,7 +54,7 @@ class ProductController extends Controller
                 Storage::disk('s3')->delete($oldPath);
             }
 
-            $path = $request->file('image')->store('products', 's3');
+            $path = $request->file('image')->store('', 's3');
             $data['image'] = Storage::disk('s3')->url($path);
         }
 
