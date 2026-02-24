@@ -24,21 +24,21 @@ class ProductController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('', 's3');
+            $path = $request->file('image')->store('products', 's3');
             $data['image'] = $path; // faqat filename
         }
 
         $product = Product::create($data);
 
         return $product->load('category', 'variants')
-               ->append('image');
+               ->append('image_url');
 
     }
 
     public function show(Product $product)
     {
         return $product->load('category', 'variants')
-               ->append('image');
+               ->append('image_url');
 
     }
 
@@ -58,14 +58,14 @@ class ProductController extends Controller
                 Storage::disk('s3')->delete($product->image);
             }
             
-            $path = $request->file('image')->store('', 's3');
+            $path = $request->file('image')->store('products', 's3');
             $data['image'] = $path;
         }
 
         $product->update($data);
 
         return $product->load('category', 'variants')
-               ->append('image');
+               ->append('image_url');
 
     }
 
