@@ -15,12 +15,7 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        dd(
-            $request->all(),
-            $request->hasFile('image'),
-            $request->file('image')
-        );
-        
+         
         $data = $request->validate([
             'category_id' => 'required|exists:categories,id',
             'name' => 'required',
@@ -36,14 +31,14 @@ class ProductController extends Controller
         $product = Product::create($data);
 
         return $product->load('category', 'variants')
-               ->append('image_url');
+               ->append('image');
 
     }
 
     public function show(Product $product)
     {
         return $product->load('category', 'variants')
-               ->append('image_url');
+               ->append('image');
 
     }
 
@@ -70,7 +65,7 @@ class ProductController extends Controller
         $product->update($data);
 
         return $product->load('category', 'variants')
-               ->append('image_url');
+               ->append('image');
 
     }
 
