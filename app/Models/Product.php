@@ -25,4 +25,6 @@ class Product extends Model
     {
         return $this->image ? Storage::disk('s3')->url($this->image) : null;
     }
+
+    protected $appends = ['image_url'];
 }
