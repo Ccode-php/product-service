@@ -29,7 +29,6 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/ccode-php/product-service:latest
             ghcr.io/ccode-php/product-service:v1.0.${{ github.run_number }}
 
 

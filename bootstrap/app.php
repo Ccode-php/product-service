@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'verify.token' => \App\Http\Middleware\VerifyToken::class,
+            'verify.service.token' => \App\Http\Middleware\VerifyServiceToken::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
