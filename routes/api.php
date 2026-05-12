@@ -21,8 +21,8 @@ Route::middleware('verify.token')->group(function () {
 
 Route::middleware('verify.service.token')->group(function () {
 
-    
-});Route::post(
+    Route::post(
         '/product/variants/{id}/decrease-stock',
         [ProductVariantController::class, 'decreaseStock']
     );
+});
